@@ -1,0 +1,151 @@
+---
+title: "Homework 1"
+output:
+  html_document:
+    df_print: paged
+---
+```{r setup, message = F, include=FALSE}
+options(htmltools.dir.version = FALSE)
+library(tidyverse)
+library(DAAG)
+```
+
+1. The Iowa data set iowa.csv is a toy example that summarises the yield of wheat (bushels per acre) for the state of Iowa between 1930-1962. In addition to yield, year, rainfall and temperature were recorded as the main predictors of yield.
+    a. First, we need to load the data set into R using the command `read.csv()`. Use the help function to learn what arguments this function takes. Once you have the necessary input, load the data set into R and make it a data frame called `iowa.df`.
+    b. How many rows and columns does `iowa.df` have? 
+    c. What are the names of the columns of `iowa.df`?
+    d. What is the value of row 5, column 7 of `iowa.df`?
+    e. Display the second row of `iowa.df` in its entirety.
+    
+```{r}
+iowa.df<-read.csv("data/Iowa.csv",header=T,sep=";")
+dim(iowa.df) # 33rows and 10 columns
+colnames(iowa.df) # "Year"  "Rain0" "Temp1" "Rain1" "Temp2" "Rain2" "Temp3" "Rain3" "Temp4" "Yield"
+iowa.df[5,7] # 79.7
+iowa.df[2,] # as below
+```
+
+2. Syntax and class-typing.
+    a. For each of the following commands, either explain why they should be errors, or explain the non-erroneous result.
+
+```
+vector1 <- c("5", "12", "7", "32")
+max(vector1)
+sort(vector1)
+sum(vector1)
+
+    Elements in vector1 should be numeric. If the type is character, then max() and sort() will give the maximum and sequence respectively using the sorting method of character variable. Meantime the elements in vector1 cannot be summed. If the type is numeric instead, then max(vector1) = 32, sort(vector1) = 5 7 12 32, sum(vector1) = 56.
+```
+    b. For the next series of commands, either explain their results, or why they should produce errors.
+
+```
+vector2 <- c("5",7,12)
+vector2[2] + vector2[3]
+
+    When character variable and numeric variable enter the vector at the same time, the numeric variable will be transfered into character. Addition cannot be complied.
+
+dataframe3 <- data.frame(z1="5",z2=7,z3=12)
+dataframe3[1,2] + dataframe3[1,3]
+
+    The two variables are both numeric. Addition can be carried out.
+
+list4 <- list(z1="6", z2=42, z3="49", z4=126)
+list4[[2]]+list4[[4]]
+list4[2]+list4[4]
+
+    list[[]] returns a vector, while list[] returns a list.
+```
+    
+3. Working with functions and operators.
+    a. The colon operator will create a sequence of integers in order. It is a special case of the function `seq()` which you saw earlier in this assignment. Using the help command `?seq` to learn about the function, design an expression that will give you the sequence of numbers from 1 to 10000 in increments of 372. Design another that will give you a sequence between 1 and 10000 that is exactly 50 numbers in length.
+    
+    b. The function `rep()` repeats a vector some number of times. Explain the difference between `rep(1:3, times=3) and rep(1:3, each=3).
+    
+```{r}
+seq1 = seq(from = 1, to = 10000, by=372)
+seq2 = seq(from = 1, to = 10000, length.out = 50)
+rep(1:3, times=3) # The whole sequence will be repeated for 3 times
+rep(1:3, each=3) # Each number will be repeated for 3 times by the original order
+```
+
+MB.Ch1.2. The orings data frame gives data on the damage that had occurred in US space shuttle launches prior to the disastrous Challenger launch of 28 January 1986. The observations in rows 1, 2, 4, 11, 13, and 18 were included in the pre-launch charts used in deciding whether to proceed with the launch, while remaining rows were omitted.
+
+Create a new data frame by extracting these rows from orings, and plot total incidents against temperature for this new data frame. Obtain a similar plot for the full data set.
+
+```{r}
+dataframe2 = orings[c(1,2,4,11,13,18),]
+par(mfrow=c(1,2))
+plot(dataframe2$Temperature,dataframe2$Total)
+plot(orings$Temperature,orings$Total)
+```
+MB.Ch1.4. For the data frame ais (DAAG package)
+
+(a) Use the function str() to get information on each of the columns. Determine whether any of the columns hold missing values.
+
+```{r}
+str(ais)
+sum(complete.cases(ais)) == nrow(ais) #No missing values
+```
+
+(b) Make a table that shows the numbers of males and females for each different sport. In which sports is there a large imbalance (e.g., by a factor of more than 2:1) in the numbers of the two sexes?
+
+```{r}
+table4<-table(ais$sex,ais$sport) #There is a large imbalance in Gym, Netball,T_sprnt and W_POlo
+```
+
+MB.Ch1.6.Create a data frame called Manitoba.lakes that contains the lake’s elevation (in meters above sea level) and area (in square kilometers) as listed below. Assign the names of the lakes using the row.names() function.
+               elevation  area
+Winnipeg             217 24387
+Winnipegosis         254  5374
+Manitoba             248  4624
+SouthernIndian       254  2247
+Cedar                253  1353
+Island               227  1223
+Gods                 178  1151
+Cross                207   755
+Playgreen            217   657
+
+```{r}
+elevation<-c(217,254,248,254,253,227,178,207,217)
+area<-c(24387,5374,4624,2247,1353,1223,1151,755,657)
+Manitoba.lakes<-as.data.frame(cbind(elevation,area),
+                    row.names(Manitoba.lakes)<-c("Winnipeg","Winnipegosis","Manitoba","SouthernIndian","Cedar","Island","Gods","Cross","Playgreen"))
+
+```
+
+(a) Use the following code to plot log2(area) versus elevation, adding labeling infor- mation (there is an extreme value of area that makes a logarithmic scale pretty much essential):
+
+```{r}
+attach(Manitoba.lakes)
+plot(log2(area) ~ elevation, pch=16, xlim=c(170,280))
+# NB: Doubling the area increases log2(area) by 1.0
+text(log2(area) ~ elevation, labels=row.names(Manitoba.lakes), pos=4)
+text(log2(area) ~ elevation, labels=area, pos=2) 
+title("Manitoba’s Largest Lakes")
+```
+
+Devise captions that explain the labeling on the points and on the y-axis. It will be necessary to explain how distances on the scale relate to changes in area.
+
+(b) Repeat the plot and associated labeling, now plotting area versus elevation, but specifying log="y" in order to obtain a logarithmic y-scale.
+
+```{r}
+plot(area ~ elevation, pch=16, xlim=c(170,280), ylog=T)
+text(area ~ elevation, labels=row.names(Manitoba.lakes), pos=4, ylog=T)
+text(area ~ elevation, labels=area, pos=2, ylog=T) 
+title("Manitoba’s Largest Lakes")
+
+```
+
+MB.Ch1.7. Look up the help page for the R function dotchart(). Use this function to display the areas of the Manitoba lakes (a) on a linear scale, and (b) on a logarithmic scale. Add, in each case, suitable labeling information.
+
+```{r}
+dotchart(log2(area),labels = row.names(Manitoba.lakes),xlab = "log2(area)")
+dotchart(area,labels = row.names(Manitoba.lakes),log = "x",xlab = "log(area)")
+```
+
+MB.Ch1.8. Using the sum() function, obtain a lower bound for the area of Manitoba covered by water.
+
+```{r}
+sum(Manitoba.lakes$area)
+```
+
